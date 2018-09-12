@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<style type="text/css">
+	*{
+		margin: 0;
+		padding:0;
+	}
+	canvas{
+		display:block;
+		margin:0 auto;
+		border:1px solid blue;
+	}
+	</style>
+</head>
+<body>
+	<canvas  id="myCanvas" width="360" height="512"></canvas>
+	<script type="text/javascript" src="js/Background.js"></script>
+	<script type="text/javascript" src="js/Bird.js"></script>
+	<script type="text/javascript" src="js/Game.js"></script>
+	<script type="text/javascript" src="js/Pipe.js"></script>
+	<script type="text/javascript">
+
+	 // 定义数组用来存放游戏中所需要的图片
+	 var imgArr = ["images/bird0_0.png", "images/bird0_1.png", "images/bird0_2.png", "images/bg_day.png", "images/land.png", "images/pipe_down.png", "images/pipe_up.png"];
+
+	 // 希望所有图片加载完毕之后执行代码
+	 loadImag(imgArr, function(imgArr) {
+         // 获取canvas
+         var canvas=document.getElementById("myCanvas");
+         // 获取画笔
+         var ctx=canvas.getContext("2d");
+         // 初始化bird
+         var bird=new Bird(imgArr.slice(0,3),100,100);
+	 	// 初始化管子
+	 	 var pipe=new Pipe(imgArr[5],imgArr[6],4,360); 
+	 	// 初始化地面
+	     var land=new Background(imgArr[4],4,0,400);
+	 	// 初始化山
+	 	var mountain=new Background(imgArr[3],2,0,0);
+	 	// 初始化游戏
+	 	window.g = new Game(ctx, bird, pipe, land, mountain);
+	 })
+
+	
+
+
+
+	 // 定义一个函数，传递两个参数，第一个参数是一个数组， 数组中每一成员都是图片的路径，第二个参数是一个回调函数，当所有图片加载完毕之后，执行回调函数
+
+	 /**
+	  * loadImage 用于加载图片 ，并且当所有图片加载完毕之后 执行回调函数
+	  * @arr 数组图片
+	  * @callback 回调函数
+	  **/
+
+	 function loadImag(arr, callback) {
+	 	// 定义一个信号量
+	 	var idx = 0;
+	 	// 定义数组
+	 	var loadedImagArr = [];
+	 	arr.forEach(function(value, index) {
+	 		// 创建图片元素
+	 		var img = new Image();
+	 		// 添加路径
+			img.src = value;
+			// 添加事件
+			img.onload = function() {
+				// 因为load时间加载图片的循序是不一致的，所以我们使用对应的索引保证加载顺序
+				// 每加载一张图片就放入到数组中
+				loadedImagArr[index] = this;
+				// 信号量改变
+				idx++; 
+				if (idx === arr.length) {
+					callback(loadedImagArr);
+				}
+			}
+	 	})
+	 }
+	</script>
+</body>
+</html>
